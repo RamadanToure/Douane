@@ -1,0 +1,21 @@
+.red-g{
+    color:#f06548;
+}
+
+.btn-pink {
+    color: #fff;
+    background-color: #ed1b60;
+    border-color: #ed1b60; }
+    .btn-pink:hover, .btn-pink:focus {
+      color: #fff;
+      background-color: #df195f;
+      border-color: #df195f; }
+    .btn-pink:not(:disabled):not(.disabled).active, .btn-pink:not(:disabled):not(.disabled):active {
+      color: #fff;
+      background-color: #be1b54;
+      border-color: #be1b54; }
+    .btn-pink.disabled, .btn-pink:disabled {
+      color: #fff;
+      background-color: #f68daf;
+      border-color: #f68daf; }
+

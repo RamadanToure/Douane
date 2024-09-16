@@ -1,0 +1,126 @@
+# Augmenter la taille maximale des fichiers uploadés
+php_value post_max_size 30M
+php_value upload_max_filesize 30M
+
+# Ajouter un type MIME pour les fichiers .appcache
+AddType text/cache-manifest .appcache
+
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+
+    # Rediriger vers HTTPS si ce n'est pas déjà le cas
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Servir les fichiers existants dans le dossier /public comme s'ils étaient à la racine /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ /public/$1 [L]
+
+    # Diriger tout le reste vers /public/index.php
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ /public/index.php [L]
+</IfModule>
+
+# Contrôle du cache navigateur - Expire headers
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 7200 seconds"
+    ExpiresByType image/jpg "access plus 1 week"
+    ExpiresByType image/jpeg "access plus 1 week"
+    ExpiresByType image/png "access plus 1 week"
+    ExpiresByType image/gif "access plus 1 week"
+    ExpiresByType image/svg+xml "access plus 1 week"
+    AddType image/x-icon .ico
+    ExpiresByType image/ico "access plus 1 week"
+    ExpiresByType image/icon "access plus 1 week"
+    ExpiresByType image/x-icon "access plus 1 week"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+    ExpiresByType text/html "access plus 7200 seconds"
+    ExpiresByType application/xhtml+xml "access plus 7200 seconds"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType application/x-javascript "access plus 1 week"
+    ExpiresByType application/x-shockwave-flash "access plus 1 week"
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(ico|jpe?g|png|gif|swf)$">
+        Header set Cache-Control "max-age=2592000, public"
+    </FilesMatch>
+
+    <FilesMatch "\.(css)$">
+        Header set Cache-Control "max-age=604800, public"
+    </FilesMatch>
+
+    <FilesMatch "\.(js)$">
+        Header set Cache-Control "max-age=216000, private"
+    </FilesMatch>
+
+    <FilesMatch "\.(x?html?|php)$">
+        Header set Cache-Control "max-age=600, private, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# Activation de ZEND optimizer
+SetEnv ZEND_OPTIMIZER 1
+
+# Suppression de SESSID dans les URL
+SetEnv SESSION_USE_TRANS_SID 0
+
+# Compression GZIP
+# Commenter la ligne ci-dessous si plantage
+# php_flag zlib.output_compression on
+
+# Activer le filtre
+SetOutputFilter DEFLATE
+
+# Certains navigateurs ne peuvent pas avoir GZIP (les vieux)
+BrowserMatch ^Mozilla/4 gzip-only-text/html
+BrowserMatch ^Mozilla/4\.0678 no-gzip
+
+# On ne prend pas IE
+BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+# On ne compresse pas les images, elles le sont déjà
+SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+
+# On gère le cas des proxy
+Header append Vary User-Agent env=!dont-vary
+
+<IfModule mod_deflate.c>
+    # Compresser HTML, CSS, JavaScript, Text, XML et polices
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+    AddOutputFilterByType DEFLATE application/x-font
+    AddOutputFilterByType DEFLATE application/x-font-opentype
+    AddOutputFilterByType DEFLATE application/x-font-otf
+    AddOutputFilterByType DEFLATE application/x-font-truetype
+    AddOutputFilterByType DEFLATE application/x-font-ttf
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE font/opentype
+    AddOutputFilterByType DEFLATE font/otf
+    AddOutputFilterByType DEFLATE font/ttf
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE image/x-icon
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/xml
+
+    # Enlever les bugs de navigateur (nécessaire seulement pour les très vieux navigateurs)
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+    Header append Vary User-Agent
+</IfModule>
+
+# Masquer un fichier spécifique
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
