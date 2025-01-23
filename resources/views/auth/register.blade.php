@@ -2,7 +2,7 @@
 
 @section('content')
 
-<style>
+{{-- <style>
     /* Style pour le wrapper de la page d'authentification */
     .auth-page-wrapper {
         background: url('{{ asset('assets/images/background.jpg') }}') no-repeat center center;
@@ -92,7 +92,7 @@
     .text-center {
         text-align: center;
     }
-</style>
+</style> --}}
 
 <div class="auth-page-wrapper">
     <!-- auth page content -->
